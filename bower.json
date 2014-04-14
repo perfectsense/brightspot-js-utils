@@ -1,0 +1,18 @@
+{
+  "authors": [ {
+    "homepage": "http://www.perfectsensedigital.com/",
+    "name": "Perfect Sense Digital"
+  } ],
+  "dependencies": {
+    "jquery": ">=1.7.0"
+  },
+  "homepage": "https://github.com/perfectsense/brightspot-js-utils",
+  "keywords": [
+    "brightspot",
+    "jquery"
+  ],
+  "license": "MIT",
+  "main": "bsp-utils.js",
+  "name": "brightspot-js-utils",
+  "version": "1.0.0"
+}
