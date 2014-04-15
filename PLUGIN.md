@@ -53,11 +53,11 @@ Called for each `item` that needs to be initialized.
 
 Called once per corresponding `_init` call after all `items` have been initialized using `_each`.
 
-## Custom actions
+## customAction
 
 If it's a function, it's called as is. Any other type will return the value as is.
 
-## Private actions
+## _on
 
 `this._on(Array or HTMLElement roots, String selector, data, Function(Event event) handler)`
 
@@ -71,6 +71,8 @@ Attaches a plugin-specific event `handler` on all elements that match the `selec
 
 Attaches a plugin-specific event `handler` on all `elements`.
 
+### _off
+
 `this._off(Array or HTMLElement roots, String events, String selector)`
 
 Detaches all plugin-specific `events` handlers on all elements that match the `selector` within `roots`.
@@ -82,6 +84,8 @@ Detaches all plugin-specific `events` handlers on all `elements`.
 `this._off(Array or HTMLElement elements)`
 
 Detaches all plugin-specific event handlers on all `elements`.
+
+### _data
 
 `this._data(Array or HTMLElement elements, String key)`
 
