@@ -1,0 +1,137 @@
+<!doctype html>
+<html>
+<head>
+    <title>throttle Demo</title>
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <style type="text/css">
+        .info {
+            padding: 0 20px 20px 20px;
+            width: 50%;
+        }
+
+        .logs {
+            bottom: 20px;
+            left: 50%;
+            position: fixed;
+            right: 20px;
+            top: 0;
+        }
+
+        .logs .nonThrottled {
+            height: 50%;
+            left: 0;
+            position: absolute;
+            top: 0;
+            width: 100%;
+        }
+
+        .logs .throttled {
+            height: 50%;
+            left: 0;
+            position: absolute;
+            top: 50%;
+            width: 100%;
+        }
+
+        .logs pre {
+            bottom: 0;
+            margin: 0;
+            overflow: hidden;
+            position: absolute;
+            top: 100px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <h1><code>throttle</code> Demo</h1>
+
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+        <p>Scroll to see both the non-throttled and throttled scroll event handlers trigger.</p>
+    </div>
+
+    <div class="logs">
+        <div class="nonThrottled">
+            <h2>Non-throttled</h2>
+            <p><code>$(window).on('scroll', function() { });</code></p>
+            <pre></pre>
+        </div>
+
+        <div class="throttled">
+            <h2>Throttled</h2>
+            <p><code>$(window).on('scroll', bsp_utils.throttle(1000, function() { }));</code></p>
+            <pre></pre>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript" src="bsp-utils.js"></script>
+    <script type="text/javascript">
+        (function() {
+            var start;
+
+            function createLogger($log) {
+                return function() {
+                    if (!start) {
+                        start = $.now();
+                    }
+
+                    $log.prepend('Scroll event! ' + (($.now() - start) / 1000)+ '\n');
+                };
+            }
+
+            $(window).on('scroll', createLogger($('.logs .nonThrottled pre')));
+            $(window).on('scroll', bsp_utils.throttle(1000, createLogger($('.logs .throttled pre'))));
+        })();
+    </script>
+</body>
+</html>

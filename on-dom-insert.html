@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+    <title>onDomInsert Demo</title>
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+    <style type="text/css">
+        .info {
+            padding: 0 20px 20px 20px;
+            width: 50%;
+        }
+
+        .demo {
+            bottom: 20px;
+            left: 50%;
+            position: fixed;
+            right: 20px;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        <h1><code>onDomInsert</code> Demo</h1>
+        <p>A new paragraph will appear on the right with its content set
+        to a random number when you click on the button below.
+        The <code>onDomInsert</code> call detects this and
+        duplicates the paragraph text.</p>
+        <button class="btn btn-primary">New Paragraph</button>
+    </div>
+
+    <div class="demo">
+        <h2>Paragraphs</h2>
+        <pre><code></code></pre>
+
+        <div class="paragraphs">
+        </div>
+    </div>
+
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript" src="bsp-utils.js"></script>
+
+<script type="text/javascript" class="demoScript">bsp_utils.onDomInsert(document, '.test', {
+    'insert': function(item) {
+        var $item = $(item);
+
+        $item.after($('<p/>', {
+            'text': 'onDomInsert: ' + $item.text()
+        }));
+    }
+});</script>
+
+    <script type="text/javascript">
+        (function() {
+            $('.info button').click(function() {
+                $('.paragraphs').append($('<p/>', {
+                    'class': 'test',
+                    'text': Math.random()
+                }));
+                return false;
+            });
+
+            $('.demo pre code').text($('.demoScript').text());
+        })();
+    </script>
+</body>
+</html>
