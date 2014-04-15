@@ -13,6 +13,6 @@
   ],
   "license": "MIT",
   "main": "bsp-utils.js",
-  "name": "brightspot-js-utils",
+  "name": "bsp-utils",
   "version": "1.0.0"
 }
