@@ -292,7 +292,7 @@
                 // include any elements that are already initialized.
                 $elements.each(function() {
                     var $root = $(this);
-                    var $rootElement = this.nodeType === Node.DOCUMENT_NODE ? $(this.documentElement) : $root;
+                    var $rootElement = this.nodeType === 9 ? $(this.documentElement) : $root;
 
                     if (!$rootElement.hasClass(plugin._rootClassName)) {
                         $roots = $roots.add($root);
