@@ -32,13 +32,3 @@ See the separate [plugin documentation](PLUGIN.md).
 `bsp_utils.throttle(Number interval, Function throttledFunction)`
 
 Throttles the given `throttledFunction` so that it executes at most given `interval` (in milliseconds). This method is most often used to rate-limit noisy events like `scroll` ([demo](http://perfectsense.github.io/brightspot-js-utils/throttle.html)).
-
-## updateQueryParameters
-
-`bsp_utils.updateQueryParameters(String uri, parameters...)`
-
-Updates the query parameters in the given `uri`. Here are some examples of how to specify the `parameters` argument:
-
-- `bsp_utils.updateQueryParameters('?foo=bar', 'foo', null, 'bar', 'foo')` &rarr; `'?bar=foo'`
-- `bsp_utils.updateQueryParameters('?foo=bar', 'foo', 'qux')` &rarr; `'?foo=qux'`
-- `bsp_utils.updateQueryParameters('?foo=bar', 'foo', [ 1, 2 ])` &rarr; `'?foo=1&foo=2'`
