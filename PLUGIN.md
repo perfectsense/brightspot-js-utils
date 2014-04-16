@@ -14,9 +14,9 @@ The following defines a plugin named `foo_bar` in [AMD format](http://requirejs.
 		return bsp_utils.plugin(globals, 'foo', 'bar', {
 			'_defaultOptions': { },
 			'_install': function() { },
-			'_init': function($roots, selector) { },
-			'_each': function($item) { },
-			'_all': function($items) { },
+			'_init': function(roots, selector) { },
+			'_each': function(item) { },
+			'_all': function(items) { },
 			'customAction': function() { }
 		});
 	});
