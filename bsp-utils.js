@@ -239,27 +239,20 @@
             }
 
             // Initialization.
-            plugin.live = function(elements, selector, options) {
-                var $elements = $(elements);
-                var $roots = $();
-
-                // Convert document node to its root element and make sure not to
-                // include any elements that are already initialized.
-                $elements.each(function() {
-                    var $root = $(this);
-                    var $rootElement = this.nodeType === 9 ? $(this.documentElement) : $root;
-
-                    if (!$rootElement.hasClass(plugin._rootClassName)) {
-                        $roots = $roots.add($root);
-
-                        $rootElement.addClass(plugin._rootClassName);
-                        updateOptions($rootElement, $.extend(true, { }, plugin._defaultOptions, options));
-                    }
-                });
+            plugin.live = function(roots, selector, options) {
+                var $roots = $(roots);
 
                 if ($roots.length === 0) {
                     return;
                 }
+
+                // Update root options.
+                $roots.each(function() {
+                    var $rootElement = this.nodeType === 9 ? $(this.documentElement) : $(this);
+
+                    $rootElement.addClass(plugin._rootClassName);
+                    updateOptions($rootElement, $.extend(true, { }, plugin._defaultOptions, options));
+                });
 
                 var init = plugin._init;
                 var each = plugin._each;
