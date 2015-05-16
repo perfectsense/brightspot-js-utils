@@ -113,16 +113,18 @@
             });
         }
 
-        if (mutationObserver) {
-            new mutationObserver(bsp_utils.throttle(1, redoAllDomInserts)).observe(document, {
-                'childList': true,
-                'subtree': true
-            });
+        $(document).ready(function() {
+            if (mutationObserver) {
+                new mutationObserver(bsp_utils.throttle(1, redoAllDomInserts)).observe(document, {
+                    'childList': true,
+                    'subtree': true
+                });
 
-        // But if not available, brute-force it.
-        } else {
-            setInterval(redoAllDomInserts, 1000 / 60);
-        }
+            // But if not available, brute-force it.
+            } else {
+                setInterval(redoAllDomInserts, 1000 / 60);
+            }
+        });
     })();
 
     // Defines a plugin.
