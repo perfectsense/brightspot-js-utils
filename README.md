@@ -32,3 +32,9 @@ See the separate [plugin documentation](PLUGIN.md).
 `bsp_utils.throttle(Number interval, Function throttledFunction)`
 
 Throttles the given `throttledFunction` so that it executes at most given `interval` (in milliseconds). This method is most often used to rate-limit noisy events like `scroll` ([demo](http://perfectsense.github.io/brightspot-js-utils/throttle.html)).
+
+## debounce
+
+`bsp_utils.debounce(Number wait, Function debouncedFunction, Boolean immediate)`
+
+Debounces the given `debouncedFunction` so that it postpones the execution of the code for the given `wait` (in milliseconds). If `immediate` is truthy, the function is executed at the beginning of the debounce. An example usage of debouncing is, in a lazy-loaded UI, often you want to prevent double-clicks on a "load more" button from firing 2 requests to the server.
