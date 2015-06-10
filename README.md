@@ -35,6 +35,6 @@ Throttles the given `throttledFunction` so that it executes at most given `inter
 
 ## debounce
 
-`bsp_utils.debounce(Number interval, Function debouncedFunction)`
+`bsp_utils.debounce(Number wait, Function debouncedFunction, Boolean immediate)`
 
-Debounces the given `debouncedFunction` so that it postpones the execution of the code for the given `interval` (in milliseconds). If `immediate` is truthy, the function is executed at the beginning of the debounce. An example usage of debouncing is, in a lazy-loaded UI, often you want to prevent double-clicks on a "load more" button from firing 2 requests to the server.
+Debounces the given `debouncedFunction` so that it postpones the execution of the code for the given `wait` (in milliseconds). If `immediate` is truthy, the function is executed at the beginning of the debounce. An example usage of debouncing is, in a lazy-loaded UI, often you want to prevent double-clicks on a "load more" button from firing 2 requests to the server.
