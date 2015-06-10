@@ -54,6 +54,7 @@
     *   be triggered. The function will be called after it stops being called for
     *   N milliseconds. If `immediate` is passed, trigger the function on the
     *   leading edge, instead of the trailing.
+    *   from: http://davidwalsh.name/javascript-debounce-function
     */
     (function() {
         bsp_utils.debounce = function(wait, debouncedFunction, immediate) {
@@ -70,6 +71,21 @@
                 if (callNow) debouncedFunction.apply(context, args);
             };
         }
+    })();
+
+    /**
+    *   Returns an absolute/fully qualified URL given a string/pathname.
+    *   from: http://davidwalsh.name/get-absolute-url
+    */
+    (function() {
+        bsp_utils.getAbsoluteUrl = (function() {
+            var a;
+            return function(url) {
+                if(!a) a = document.createElement('a');
+                a.href = url;
+                return a.href;
+            };
+        })();
     })();
 
     // Detects inserts into the DOM.
