@@ -1,3 +1,5 @@
+NOTE: Starting with 3.0.0, bsp-js-utils is an [ECMAScript 6 module](http://www.2ality.com/2014/09/es6-modules-final.html) instead of a [RequireJS module](http://requirejs.org/). If you need an AMD version, work in the 2.x.x branch.
+
 # Installation
 
 Using [Bower](http://bower.io/):

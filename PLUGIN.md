@@ -1,24 +1,16 @@
 # Defining a plugin
 
-The following defines a plugin named `foo_bar` in [AMD format](http://requirejs.org/docs/whyamd.html#amd), where `foo` is the namespace and `bar` is the name:
+The following defines a plugin named `foo_bar` in [ECMAScript 6 module format](http://www.2ality.com/2014/09/es6-modules-final.html), where `foo` is the namespace and `bar` is the name:
 
-	(function(globals, factory) {
-		if (typeof define === 'function' && define.amd) {
-			define([ 'bsp-utils' ], factory);
+	import bsp_utils from 'bsp-utils';
 
-		} else {
-			factory(globals.bsp_utils, globals);
-		}
-
-	})(this, function(bsp_utils, globals) {
-		return bsp_utils.plugin(globals, 'foo', 'bar', {
-			'_defaultOptions': { },
-			'_install': function() { },
-			'_init': function(roots, selector) { },
-			'_each': function(item) { },
-			'_all': function(items) { },
-			'customAction': function() { }
-		});
+	return bsp_utils.plugin(false, 'foo', 'bar', {
+		'_defaultOptions': { },
+		'_install': function() { },
+		'_init': function(roots, selector) { },
+		'_each': function(item) { },
+		'_all': function(items) { },
+		'customAction': function() { }
 	});
 
 Within any plugin action method, `this` is always set to the plugin object, and that allows access to the other actions (e.g. `this.customAction()`).
