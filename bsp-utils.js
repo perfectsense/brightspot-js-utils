@@ -74,7 +74,17 @@ var bsp_utils = { };
     // Execute all callbacks on any new elements.
     function doDomInsert(domInsert) {
         var insertedClassName = domInsert.insertedClassName;
+        // filter for anything that has already been initialized
         var $items = domInsert.$roots.find(domInsert.selector).filter(':not(.' + insertedClassName + ')');
+        // also filter for things that are not hidden, we do not want to inialize those
+        $items = $items.filter(':not(.hidden)');
+
+        // go through each of the items and make sure they are not in a hidden element, get those out of there
+        $items.each(function() {
+            if($(this).parents('.hidden').length) {
+                $items = $items.not($(this));
+            }
+        });
 
         if ($items.length > 0) {
             $items.addClass(insertedClassName);
@@ -284,8 +294,13 @@ var bsp_utils = { };
                 if (selector) {
                     bsp_utils.onDomInsert($.makeArray($roots), selector, {
                         'insert': function(item) {
-                            var $item = $(item);
+                            var $item = $(item).filter(':not(.hidden)');
                             var rootOptions = plugin.option($item.closest('.' + plugin._rootClassName));
+
+                            // if we are hidden or one of our parent is hidden
+                            if ($item.parents('.hidden').length || !$item.length) {
+                                return;
+                            }
 
                             $item.addClass(plugin._itemClassName);
                             updateOptions($item, rootOptions);
