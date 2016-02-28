@@ -139,9 +139,75 @@ var bsp_utils = { };
         });
     }
 
+    var i, j, k, l;
+
+    var mutationCallback = bsp_utils.throttle(1, redoAllDomInserts);
+
     $(document).ready(function() {
         if (mutationObserver) {
-            new mutationObserver(bsp_utils.throttle(1, redoAllDomInserts)).observe(document, {
+            new mutationObserver(function(mutationRecords, instance) {
+
+                if (mutationRecords) {
+
+                    var avoided = true;
+
+                    // for each mutation record ...
+                    optimize: for (i = 0; i < mutationRecords.length; i += 1) {
+
+                        var mutationRecord = mutationRecords[i];
+
+                        // ... with added nodes ...
+                        if (mutationRecord.addedNodes.length > 0) {
+
+                            var $addedNodes = $(mutationRecord.addedNodes);
+
+                            // ... check, for each of the added nodes, whether for any domInsert ...
+                            for (j = 0; j < domInserts.length; j += 1) {
+
+                                var domInsert = domInserts[j];
+
+                                // .. if any of the $addedNodes match the domInsert selector
+                                // with a universal parent using $(addedNode).is("* " + domInsert.selector)
+                                var addedNodesMatching = $addedNodes.filter('* ' + domInsert.selector).toArray();
+
+                                if (addedNodesMatching.length === 0) {
+                                    continue;
+                                }
+
+                                var roots = domInsert.$roots.toArray();
+
+                                // ... and if so, whether the node is a descendant of any of the roots.
+                                for (k = 0; k < roots.length; k += 1) {
+
+                                    var root = roots[k];
+
+                                    for (l = 0; l < addedNodesMatching.length; l += 1) {
+
+                                        if (root.contains(addedNodesMatching[l])) {
+
+                                            // If any of the added Nodes is a descendant of any domInsert
+                                            // root and matches the super-selector of the universally-prefixed
+                                            // domInsert.selector, then the mutation must trigger a redo of all domInserts.
+
+                                            // This will still allow through elements that meet both the
+                                            // above criteria independently but not jointly (selector relative to root),
+                                            // but will also greatly restrict the total number of mutations that
+                                            // trigger redoAllDomInserts.
+                                            avoided = false;
+                                            break optimize;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (avoided) {
+                        return;
+                    }
+                }
+                mutationCallback.call(null);
+            }).observe(document, {
                 'childList': true,
                 'subtree': true
             });
