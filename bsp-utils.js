@@ -53,7 +53,8 @@
     (function() {
         var domInserts = [ ];
         var insertedClassNamePrefix = 'bsp-onDomInsert-inserted-';
-        var insertedClassNameIndex = 0;
+        var insertedClassNameIndex = 0,
+            blacklistedElements = [ ];
 
         // Execute all callbacks on any new elements.
         function doDomInsert(domInsert) {
@@ -104,6 +105,17 @@
             domInserts.push(domInsert);
         };
 
+        bsp_utils.addDomInsertBlacklist = function(element) {
+
+            if (!element || (!(element instanceof HTMLElement) && !(element instanceof HTMLUnknownElement))) {
+                return;
+            }
+
+            if (blacklistedElements.indexOf(element) === -1) {
+                blacklistedElements.push(element);
+            }
+        };
+
         // Try to detect DOM mutations efficiently.
         var mutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 
@@ -113,12 +125,62 @@
             });
         }
 
+        var i, j, k, l;
+
+        var mutationCallback = bsp_utils.throttle(1, redoAllDomInserts);
+
         $(document).ready(function() {
             if (mutationObserver) {
-                new mutationObserver(bsp_utils.throttle(1, redoAllDomInserts)).observe(document, {
-                    'childList': true,
-                    'subtree': true
-                });
+                new mutationObserver(function(mutationRecords, instance) {
+
+                    if (mutationRecords) {
+
+                        var avoid = true;
+
+                        // try to avoid calling redoAllDomInserts
+                        optimize: for (i = 0; i < mutationRecords.length; i += 1) {
+
+                            var mutationRecord = mutationRecords[i],
+                                target = mutationRecord.target;
+
+                            // if no nodes were added, continue.
+                            if(mutationRecord.addedNodes.length === 0) {
+                                continue;
+                            }
+
+                            // if the target of the mutation event is on the blacklist, continue.
+                            if (blacklistedElements.indexOf(target) !== -1) {
+                                continue;
+                            }
+
+                            // if the target of the mutation event is contained within any element
+                            // on the blacklist, continue.
+                            for (j = 0; j < blacklistedElements.length; j += 1) {
+                                if (blacklistedElements[j].contains(mutationRecord.target)) {
+                                    continue optimize;
+                                }
+                            }
+
+                            // finally, if there are added nodes and the target isn't on the blacklist,
+                            // redoAllDomInserts can still be avoided if all of the addedNodes are Text.
+                            for (j = 0; j < mutationRecord.addedNodes.length; j += 1) {
+
+                                if (!(mutationRecord.addedNodes[j] instanceof Text)) {
+                                    avoid = false;
+                                    break optimize;
+                                }
+                            }
+                        }
+
+                        if (!avoid) {
+                            mutationCallback.call();
+                        }
+                    }
+
+                }).observe(document, {
+                        'childList': true,
+                        'subtree': true
+                    });
 
             // But if not available, brute-force it.
             } else {
