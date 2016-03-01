@@ -53,8 +53,8 @@
     (function() {
         var domInserts = [ ];
         var insertedClassNamePrefix = 'bsp-onDomInsert-inserted-';
-        var insertedClassNameIndex = 0,
-            blacklistedElements = [ ];
+        var insertedClassNameIndex = 0;
+        var blacklistedElements = [ ];
 
         // Execute all callbacks on any new elements.
         function doDomInsert(domInsert) {
@@ -106,8 +106,11 @@
         };
 
         bsp_utils.addDomInsertBlacklist = function(element) {
+            if (!element) {
+                return;
+            }
 
-            if (!element || (!(element instanceof HTMLElement) && !(element instanceof HTMLUnknownElement))) {
+            if (!(element instanceof HTMLElement || element instanceof HTMLUnknownElement)) {
                 return;
             }
 
@@ -125,62 +128,66 @@
             });
         }
 
-        var i, j, k, l;
-
         var mutationCallback = bsp_utils.throttle(1, redoAllDomInserts);
 
         $(document).ready(function() {
             if (mutationObserver) {
-                new mutationObserver(function(mutationRecords, instance) {
+                new mutationObserver(function(mutations, instance) {
+                    if (!mutations) {
+                        return;
+                    }
 
-                    if (mutationRecords) {
+                    var avoid = true;
+                    var i;
+                    var il;
+                    var j;
+                    var jl
 
-                        var avoid = true;
+                    // Try to avoid calling redoAllDomInserts.
+                    OPTIMIZE: for (i = 0, il = mutations.length; i < il; i += 1) {
+                        var mutation = mutations[i];
+                        var addedNodes = mutation.addedNodes;
 
-                        // try to avoid calling redoAllDomInserts
-                        optimize: for (i = 0; i < mutationRecords.length; i += 1) {
+                        // If no nodes were added, check next.
+                        if (addedNodes.length === 0) {
+                            continue;
+                        }
 
-                            var mutationRecord = mutationRecords[i],
-                                target = mutationRecord.target;
+                        var target = mutation.target;
 
-                            // if no nodes were added, continue.
-                            if(mutationRecord.addedNodes.length === 0) {
-                                continue;
-                            }
+                        // If the target of the mutation event is on the
+                        // blacklist, check next.
+                        if (blacklistedElements.indexOf(target) !== -1) {
+                            continue;
+                        }
 
-                            // if the target of the mutation event is on the blacklist, continue.
-                            if (blacklistedElements.indexOf(target) !== -1) {
-                                continue;
-                            }
-
-                            // if the target of the mutation event is contained within any element
-                            // on the blacklist, continue.
-                            for (j = 0; j < blacklistedElements.length; j += 1) {
-                                if (blacklistedElements[j].contains(mutationRecord.target)) {
-                                    continue optimize;
-                                }
-                            }
-
-                            // finally, if there are added nodes and the target isn't on the blacklist,
-                            // redoAllDomInserts can still be avoided if all of the addedNodes are Text.
-                            for (j = 0; j < mutationRecord.addedNodes.length; j += 1) {
-
-                                if (!(mutationRecord.addedNodes[j] instanceof Text)) {
-                                    avoid = false;
-                                    break optimize;
-                                }
+                        // If the target of the mutation event is contained
+                        // within any element on the blacklist, check next.
+                        for (j = 0, jl = blacklistedElements.length; j < jl; j += 1) {
+                            if (blacklistedElements[j].contains(target)) {
+                                continue OPTIMIZE;
                             }
                         }
 
-                        if (!avoid) {
-                            mutationCallback.call();
+                        // Finally, if there are added nodes and the target
+                        // isn't on the blacklist, redoAllDomInserts can
+                        // still be avoided if all of the addedNodes are Text.
+                        for (j = 0, jl = addedNodes.length; j < jl; j += 1) {
+                            if (!(addedNodes[j] instanceof Text)) {
+                                avoid = false;
+                                break OPTIMIZE;
+                            }
                         }
                     }
 
+                    if (!avoid) {
+                        mutationCallback.call();
+                    }
+
                 }).observe(document, {
-                        'childList': true,
-                        'subtree': true
-                    });
+                    'childList': true,
+                    'subtree': true
+                });
 
             // But if not available, brute-force it.
             } else {
