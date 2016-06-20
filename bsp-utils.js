@@ -70,6 +70,7 @@ var bsp_utils = { };
     var domInserts = [ ];
     var insertedClassNamePrefix = 'bsp-onDomInsert-inserted-';
     var insertedClassNameIndex = 0;
+    var blacklistedElements = [ ];
 
     // Execute all callbacks on any new elements.
     function doDomInsert(domInsert) {
@@ -130,6 +131,20 @@ var bsp_utils = { };
         domInserts.push(domInsert);
     };
 
+    bsp_utils.addDomInsertBlacklist = function(element) {
+        if (!element) {
+            return;
+        }
+
+        if (!(element instanceof HTMLElement || element instanceof HTMLUnknownElement)) {
+            return;
+        }
+
+        if (blacklistedElements.indexOf(element) === -1) {
+            blacklistedElements.push(element);
+        }
+    };
+
     // Try to detect DOM mutations efficiently.
     var mutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 
@@ -139,80 +154,68 @@ var bsp_utils = { };
         });
     }
 
-    var i, j, k, l;
-
     var mutationCallback = bsp_utils.throttle(1, redoAllDomInserts);
 
     $(document).ready(function() {
         if (mutationObserver) {
-            new mutationObserver(function(mutationRecords, instance) {
+            new mutationObserver(function(mutations, instance) {
+                if (!mutations) {
+                    return;
+                }
 
-                if (mutationRecords) {
+                var avoid = true;
+                var i;
+                var il;
+                var j;
+                var jl;
 
-                    var avoided = true;
+                // Try to avoid calling redoAllDomInserts.
+                OPTIMIZE: for (i = 0, il = mutations.length; i < il; i += 1) {
+                    var mutation = mutations[i];
+                    var addedNodes = mutation.addedNodes;
 
-                    // for each mutation record ...
-                    optimize: for (i = 0; i < mutationRecords.length; i += 1) {
+                    // If no nodes were added, check next.
+                    if (addedNodes.length === 0) {
+                        continue;
+                    }
 
-                        var mutationRecord = mutationRecords[i];
+                    var target = mutation.target;
 
-                        // ... with added nodes ...
-                        if (mutationRecord.addedNodes.length > 0) {
+                    // If the target of the mutation event is on the
+                    // blacklist, check next.
+                    if (blacklistedElements.indexOf(target) !== -1) {
+                        continue;
+                    }
 
-                            var $addedNodes = $(mutationRecord.addedNodes);
-
-                            // ... check, for each of the added nodes, whether for any domInsert ...
-                            for (j = 0; j < domInserts.length; j += 1) {
-
-                                var domInsert = domInserts[j];
-
-                                // .. if any of the $addedNodes match the domInsert selector
-                                // with a universal parent using $(addedNode).is("* " + domInsert.selector)
-                                var addedNodesMatching = $addedNodes.filter('* ' + domInsert.selector).toArray();
-
-                                if (addedNodesMatching.length === 0) {
-                                    continue;
-                                }
-
-                                var roots = domInsert.$roots.toArray();
-
-                                // ... and if so, whether the node is a descendant of any of the roots.
-                                for (k = 0; k < roots.length; k += 1) {
-
-                                    var root = roots[k];
-
-                                    for (l = 0; l < addedNodesMatching.length; l += 1) {
-
-                                        if (root.contains(addedNodesMatching[l])) {
-
-                                            // If any of the added Nodes is a descendant of any domInsert
-                                            // root and matches the super-selector of the universally-prefixed
-                                            // domInsert.selector, then the mutation must trigger a redo of all domInserts.
-
-                                            // This will still allow through elements that meet both the
-                                            // above criteria independently but not jointly (selector relative to root),
-                                            // but will also greatly restrict the total number of mutations that
-                                            // trigger redoAllDomInserts.
-                                            avoided = false;
-                                            break optimize;
-                                        }
-                                    }
-                                }
-                            }
+                    // If the target of the mutation event is contained
+                    // within any element on the blacklist, check next.
+                    for (j = 0, jl = blacklistedElements.length; j < jl; j += 1) {
+                        if (blacklistedElements[j].contains(target)) {
+                            continue OPTIMIZE;
                         }
                     }
 
-                    if (avoided) {
-                        return;
+                    // Finally, if there are added nodes and the target
+                    // isn't on the blacklist, redoAllDomInserts can
+                    // still be avoided if all of the addedNodes are Text.
+                    for (j = 0, jl = addedNodes.length; j < jl; j += 1) {
+                        if (!(addedNodes[j] instanceof Text)) {
+                            avoid = false;
+                            break OPTIMIZE;
+                        }
                     }
                 }
-                mutationCallback.call(null);
-            }).observe(document, {
-                'childList': true,
-                'subtree': true
-            });
 
-        // But if not available, brute-force it.
+                if (!avoid) {
+                    mutationCallback.call();
+                }
+
+            }).observe(document, {
+                    'childList': true,
+                    'subtree': true
+                });
+
+            // But if not available, brute-force it.
         } else {
             setInterval(redoAllDomInserts, 1000 / 60);
         }
